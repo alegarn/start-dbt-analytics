@@ -1,0 +1,40 @@
+version: 2
+
+models:
+    - name: stg_payments
+      columns:
+        - name: payment_id
+          tests:
+            - not_null
+            - unique
+        - name: order_id
+          tests:
+            - not_null
+            - unique:
+                config:
+                  where: "stg_payments.STATUS = ('success')"
+            - relationships:
+                to: ref('stg_orders')
+                field: order_id
+        - name: payment_method
+          tests:
+            - not_null
+            - accepted_values:
+                values:
+                  - credit_card
+                  - coupon
+                  - bank_transfer
+                  - gift_card
+        - name: STATUS
+          tests:
+            - not_null
+            - accepted_values:
+                values:
+                  - success
+                  - fail
+        - name: amount
+          tests:
+            - not_null
+        - name: created_at
+          tests:
+            - not_null
