@@ -1,4 +1,4 @@
-# start-dbt-analytics
+# start-dbt-analytics - refactor
 
 Same models as start-dbt-basics.
 
