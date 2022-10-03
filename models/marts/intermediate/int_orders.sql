@@ -36,25 +36,21 @@ paid_orders as (
 total_amount_paid_per_cust as (
 
     select
-        p.order_id,
-        sum(p_o.total_amount_paid) as cust_lifetime_val
+        paid_orders.order_id,
+        sum(paid_orders.total_amount_paid) over (
+            partition by paid_orders.customer_id
+            order by paid_orders.order_placed_at
+        ) as customer_lifetime_value
 
     from 
-        paid_orders as p
-
-    left join paid_orders as p_o 
-        on p.customer_id = p_o.customer_id 
-        and p.order_id >= p_o.order_id
-
-    group by 1
-    order by p.order_id
+        paid_orders
 
 ),
 
 final as (
     select
         paid_orders.*,
-        total_amount_paid_per_cust.cust_lifetime_val
+        total_amount_paid_per_cust.customer_lifetime_value
     from
         paid_orders
     left join total_amount_paid_per_cust
@@ -62,3 +58,5 @@ final as (
 )
 
 select * from final
+
+
